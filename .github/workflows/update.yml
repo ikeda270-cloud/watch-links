@@ -5,7 +5,7 @@ on:
     - cron: '*/5 * * * *' # 5分ごと（必要に応じて変更）
   workflow_dispatch:  # 手動実行も可能
 
-jobs:
+
   build:
     runs-on: ubuntu-latest
     steps:
