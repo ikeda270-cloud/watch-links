@@ -1,27 +1,22 @@
 name: Update HTML from RSS
 
 on:
-  schedule:           # 定期実行も可能
-    - cron: '*/5 * * * *' # 5分ごと（必要に応じて変更）
-  workflow_dispatch:  # 手動実行も可能
+  workflow_dispatch:   # 外部トリガーや手動で実行
+  schedule:           
+    - cron: '0 * * * *'  # 1時間ごと（任意）
 
-
+jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # リポジトリを取得
       - uses: actions/checkout@v4
 
-      # xmllintのインストール
       - name: Install xmllint
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils
 
-      # RSS取得＋差分判定＋HTML生成＋GitHub push
       - name: Update RSS and HTML if changed
         run: |
           RSS_URL="https://script.google.com/macros/s/AKfycbwRKRwv2llI_Chp7XYlaByzw_wo90CjYihcC0FHfFONMflAL_IvwD8REhlvJMG_37GLPg/exec"
-          
-          # 新しいRSS取得
           curl -L "$RSS_URL" -o new_feed.xml
 
           # 差分判定
@@ -33,11 +28,8 @@ on:
           fi
 
           echo "RSS changed, updating HTML"
-
-          # RSS更新
           mv new_feed.xml feed.xml
 
-          # HTML生成
           echo '<!doctype html>' > index.html
           echo '<html><head><meta charset="utf-8">' >> index.html
           echo '<meta name="viewport" content="width=device-width,initial-scale=1">' >> index.html
@@ -53,7 +45,7 @@ on:
 
           echo '</ul></body></html>' >> index.html
 
-          # GitHubにpush
+          # GitHubにpush（ループ防止のため push トリガーは無効に）
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add feed.xml index.html
