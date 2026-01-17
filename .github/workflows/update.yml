@@ -10,8 +10,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Test
-        run: echo "Workflow file exists"
+      - name: Fetch RSS
+        run: |
+          curl -L "https://script.google.com/macros/s/AKfycbwRKRwv2llI_Chp7XYlaByzw_wo90CjYihcC0FHfFONMflAL_IvwD8REhlvJMG_37GLPg/exec" -o feed.xml
+
+      - name: Generate HTML
+        run: |
+          echo '<!doctype html>' > index.html
+          echo '<html><head><meta charset="utf-8">' >> index.html
+          echo '<meta name="viewport" content="width=device-width,initial-scale=1">' >> index.html
+          echo '<title>Watch Links</title></head><body>' >> index.html
+          echo '<h1>Links</h1><ul>' >> index.html
+
+          grep '<item>' -n feed.xml | while read line; do
+            title=$(echo "$line" | sed -n 's/.*<title>\(.*\)<\/title>.*/\1/p')
+            link=$(echo "$line" | sed -n 's/.*<link>\(.*\)<\/link>.*/\1/p')
+            if [ -n "$title" ] && [ -n "$link" ]; then
+              echo "<li><a href=\"$link\">$title</a></li>" >> index.html
+            fi
+          done
+
+          echo '</ul></body></html>' >> index.html
+          
+      - name: Commit and push
+        run: |
+           git config user.name "github-actions"
+           git config user.email "github-actions@github.com"
+           git add index.html
+           git commit -m "Update links from RSS" || echo "No changes"
+           git push
