@@ -1,9 +1,10 @@
 name: Update HTML from RSS
 
 on:
-  workflow_dispatch:   # 外部トリガーや手動で実行
-  schedule:           
-    - cron: '0 * * * *'  # 1時間ごと（任意）
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -14,22 +15,12 @@ jobs:
       - name: Install xmllint
         run: sudo apt-get update && sudo apt-get install -y libxml2-utils
 
-      - name: Update RSS and HTML if changed
+      - name: Fetch RSS
         run: |
-          RSS_URL="https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhr-Fio2c7sHkYdm_oKTWY5JMT4LJeF5CdC9NYXCUZdR0XVGP7OgR-MWqbrXLQkQGmOiEBsNRIeOE_qk34VZ3JXmS_83DoLBdltpRh4T7bMQ8Ikzgv-i1gvFtYXCIBb7evVMqEypcKTRz-DpoJqHArIWsWplFRuitX1yy1b-N5A_lbL3jr2403T9bbkUeawcEAH5UMDdLzUiwkNsqID8jvLgnirBnrYPwjf8uSk6T4to1SeZCVdJXKpd6M39C6TMHgDHyvedfUjQOxnOsq6fkdQ9J2vOrvl9HT4EPdc&lib=M8BbQW5w4oFF1UPr5AhHwlDZGTGrCLNAI?from=github"
-          curl -L "$RSS_URL" -o new_feed.xml
+          curl -L "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhr-Fio2c7sHkYdm_oKTWY5JMT4LJeF5CdC9NYXCUZdR0XVGP7OgR-MWqbrXLQkQGmOiEBsNRIeOE_qk34VZ3JXmS_83DoLBdltpRh4T7bMQ8Ikzgv-i1gvFtYXCIBb7evVMqEypcKTRz-DpoJqHArIWsWplFRuitX1yy1b-N5A_lbL3jr2403T9bbkUeawcEAH5UMDdLzUiwkNsqID8jvLgnirBnrYPwjf8uSk6T4to1SeZCVdJXKpd6M39C6TMHgDHyvedfUjQOxnOsq6fkdQ9J2vOrvl9HT4EPdc&lib=M8BbQW5w4oFF1UPr5AhHwlDZGTGrCLNAI?from=github" -o feed.xml
 
-          # 差分判定
-          if [ -f feed.xml ]; then
-            if cmp -s new_feed.xml feed.xml; then
-              echo "No change in RSS"
-              exit 0
-            fi
-          fi
-
-          echo "RSS changed, updating HTML"
-          mv new_feed.xml feed.xml
-
+      - name: Generate HTML
+        run: |
           echo '<!doctype html>' > index.html
           echo '<html><head><meta charset="utf-8">' >> index.html
           echo '<meta name="viewport" content="width=device-width,initial-scale=1">' >> index.html
@@ -39,15 +30,16 @@ jobs:
           paste \
             <(xmllint --xpath '//item/title/text()' feed.xml | sed 's/^[[:space:]]*//') \
             <(xmllint --xpath '//item/link/text()'  feed.xml | sed 's/^[[:space:]]*//') \
-            | while IFS=$'\t' read title link; do
-                echo "<li><a href=\"$link\">$title</a></li>" >> index.html
-              done
+          | while IFS=$'\t' read title link; do
+              echo "<li><a href=\"$link\">$title</a></li>" >> index.html
+            done
 
           echo '</ul></body></html>' >> index.html
-
-          # GitHubにpush（ループ防止のため push トリガーは無効に）
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add feed.xml index.html
-          git commit -m "Update links from RSS" || echo "No changes to commit"
-          git push
+          
+      - name: Commit and push
+        run: |
+           git config user.name "github-actions"
+           git config user.email "github-actions@github.com"
+           git add index.html
+           git commit -m "Update links from RSS" || echo "No changes"
+           git push
