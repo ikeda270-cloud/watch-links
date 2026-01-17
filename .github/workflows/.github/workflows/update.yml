@@ -8,6 +8,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Hello
-        run: |
-          echo "Workflow triggered"
-          date
+        run: echo "Workflow file exists"
