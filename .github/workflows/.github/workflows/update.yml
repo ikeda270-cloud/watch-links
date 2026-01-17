@@ -7,5 +7,4 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Hello
-        run: echo "Workflow file exists"
+      - run: echo "Workflow file exists"
