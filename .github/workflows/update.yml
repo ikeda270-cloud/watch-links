@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
       - name: Fetch RSS
         run: |
           curl -L "https://script.google.com/macros/s/AKfycbwRKRwv2llI_Chp7XYlaByzw_wo90CjYihcC0FHfFONMflAL_IvwD8REhlvJMG_37GLPg/exec" -o feed.xml
