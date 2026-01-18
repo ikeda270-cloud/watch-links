@@ -17,7 +17,7 @@ jobs:
 
       - name: Fetch RSS
         run: |
-          curl -L "https://script.googleusercontent.com/macros/echo?user_content_key=AehSKLhr-Fio2c7sHkYdm_oKTWY5JMT4LJeF5CdC9NYXCUZdR0XVGP7OgR-MWqbrXLQkQGmOiEBsNRIeOE_qk34VZ3JXmS_83DoLBdltpRh4T7bMQ8Ikzgv-i1gvFtYXCIBb7evVMqEypcKTRz-DpoJqHArIWsWplFRuitX1yy1b-N5A_lbL3jr2403T9bbkUeawcEAH5UMDdLzUiwkNsqID8jvLgnirBnrYPwjf8uSk6T4to1SeZCVdJXKpd6M39C6TMHgDHyvedfUjQOxnOsq6fkdQ9J2vOrvl9HT4EPdc&lib=M8BbQW5w4oFF1UPr5AhHwlDZGTGrCLNAI?from=github" -o feed.xml
+          curl -L "https://script.google.com/macros/s/AKfycbwRKRwv2llI_Chp7XYlaByzw_wo90CjYihcC0FHfFONMflAL_IvwD8REhlvJMG_37GLPg/exec?from=github" -o feed.xml
 
       - name: Generate HTML
         run: |
