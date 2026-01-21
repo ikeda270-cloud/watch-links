@@ -21,6 +21,11 @@ const items = [...rss.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => {
   };
 });
 
+const buildTime = new Date()
+  .toISOString()
+  .replace("T", " ")
+  .slice(0, 19); // YYYY-MM-DD HH:mm:ss
+
 // テンプレートに埋め込み
 const template = fs.readFileSync("template.html", "utf-8");
 const html = template.replace(
@@ -28,14 +33,7 @@ const html = template.replace(
   JSON.stringify(items, null, 2)
 );
 
-const buildTime = new Date()
-  .toISOString()
-  .replace("T", " ")
-  .slice(0, 19); // YYYY-MM-DD HH:mm:ss
-
-html = html
-  .replace("__ITEMS_JSON__", JSON.stringify(items))
-  .replace("__BUILD_TIME__", buildTime);
+html = html.replace("__BUILD_TIME__", buildTime);
 
 fs.writeFileSync("index.html", html);
 console.log("index.html generated");
