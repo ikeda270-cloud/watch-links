@@ -1,4 +1,4 @@
-name: Update HTML from RSS
+name: Update HTML from RSS2
 
 on:
   workflow_dispatch:
