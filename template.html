@@ -96,12 +96,12 @@ function apply() {
   const limit = Number(document.getElementById("limit").value);
 
   // ★追加：日付範囲取得
-  const from = dateFromInput.value
-    ? new Date(dateFromInput.value)
-    : null;
-  const to = dateToInput.value
-    ? new Date(dateToInput.value)
-    : null;
+  //const from = dateFromInput.value
+  //  ? new Date(dateFromInput.value)
+  //  : null;
+  //const to = dateToInput.value
+  //  ? new Date(dateToInput.value)
+  //  : null;
 
   let list = ITEMS.slice();
 
@@ -110,20 +110,20 @@ function apply() {
     list = list.filter(i => i.domain === domain);
   }
 
-  // ★追加：日付範囲フィルタ
-  if (from || to) {
-    list = list.filter(i => {
-      const d = new Date(i.date);
-      if (from && d < from) return false;
-      if (to) {
-        // 終了日はその日の23:59:59まで含める
-        const end = new Date(to);
-        end.setHours(23, 59, 59, 999);
-        if (d > end) return false;
-      }
-      return true;
-    });
-  }
+// ★日付文字列（YYYY-MM-DD）
+const from = dateFromInput.value || null;
+const to   = dateToInput.value   || null;
+
+if (from || to) {
+  list = list.filter(i => {
+    const d = i.date.slice(0, 10); // YYYY-MM-DD
+
+    if (from && d < from) return false;
+    if (to   && d > to)   return false;
+
+    return true;
+  });
+}
 
   // ソート
   list.sort((a, b) => {
