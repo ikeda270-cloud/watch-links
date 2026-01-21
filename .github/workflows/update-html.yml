@@ -16,7 +16,7 @@ jobs:
 
       - name: Fetch RSS from GAS
         run: |
-          curl -L "https://script.google.com/macros/s/XXXX/exec" -o feed.xml
+          curl -L "https://script.google.com/macros/s/AKfycbwRKRwv2llI_Chp7XYlaByzw_wo90CjYihcC0FHfFONMflAL_IvwD8REhlvJMG_37GLPg/exec?from=github" -o feed.xml
 
       - name: Build HTML
         run: node build.js
