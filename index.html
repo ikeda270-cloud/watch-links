@@ -151,6 +151,9 @@ const ITEMS = [
 let asc = true;
 
 const domainSelect = document.getElementById("domainFilter");
+const dateFromInput = document.getElementById("dateFrom"); // ★追加
+const dateToInput   = document.getElementById("dateTo");   // ★追加
+
 [...new Set(ITEMS.map(i => i.domain))]
   .sort()
   .forEach(d => {
@@ -165,12 +168,37 @@ function apply() {
   const domain = domainSelect.value;
   const limit = Number(document.getElementById("limit").value);
 
+  // ★追加：日付範囲取得
+  const from = dateFromInput.value
+    ? new Date(dateFromInput.value)
+    : null;
+  const to = dateToInput.value
+    ? new Date(dateToInput.value)
+    : null;
+
   let list = ITEMS.slice();
 
+  // ドメインフィルタ
   if (domain) {
     list = list.filter(i => i.domain === domain);
   }
 
+  // ★追加：日付範囲フィルタ
+  if (from || to) {
+    list = list.filter(i => {
+      const d = new Date(i.date);
+      if (from && d < from) return false;
+      if (to) {
+        // 終了日はその日の23:59:59まで含める
+        const end = new Date(to);
+        end.setHours(23, 59, 59, 999);
+        if (d > end) return false;
+      }
+      return true;
+    });
+  }
+
+  // ソート
   list.sort((a, b) => {
     const A = a[key];
     const B = b[key];
@@ -196,7 +224,12 @@ function render(items) {
   });
 }
 
+// ★初期表示
 apply();
+
+// ★追加：日付変更時に自動再適用
+dateFromInput.addEventListener("change", apply);
+dateToInput.addEventListener("change", apply);
 </script>
 
 </body>
