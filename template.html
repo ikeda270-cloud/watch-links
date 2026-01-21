@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Links</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body { font-family: sans-serif; margin: 1em; }
+select, button { font-size: 1em; margin: 0.2em; }
+li { margin: 0.4em 0; }
+small { color: #666; }
+</style>
+</head>
+<body>
+
+<h1>Links</h1>
+
+<!-- UI -->
+<div>
+  並び替え:
+  <select id="sortKey">
+    <option value="date">日付</option>
+    <option value="title">タイトル</option>
+    <option value="link">URL</option>
+  </select>
+
+  ドメイン:
+  <select id="domainFilter">
+    <option value="">すべて</option>
+  </select>
+
+  表示件数:
+  <select id="limit">
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="50">50</option>
+    <option value="0">全件</option>
+  </select>
+
+  <button onclick="apply()">適用</button>
+</div>
+
+<hr>
+
+<ul id="list"></ul>
+
+<script>
+const ITEMS = __ITEMS_JSON__;
+let asc = true;
+
+const domainSelect = document.getElementById("domainFilter");
+[...new Set(ITEMS.map(i => i.domain))]
+  .sort()
+  .forEach(d => {
+    const o = document.createElement("option");
+    o.value = d;
+    o.textContent = d;
+    domainSelect.appendChild(o);
+  });
+
+function apply() {
+  const key = document.getElementById("sortKey").value;
+  const domain = domainSelect.value;
+  const limit = Number(document.getElementById("limit").value);
+
+  let list = ITEMS.slice();
+
+  if (domain) {
+    list = list.filter(i => i.domain === domain);
+  }
+
+  list.sort((a, b) => {
+    const A = a[key];
+    const B = b[key];
+    return (A > B ? 1 : -1) * (asc ? 1 : -1);
+  });
+
+  if (limit > 0) list = list.slice(0, limit);
+
+  asc = !asc;
+  render(list);
+}
+
+function render(items) {
+  const ul = document.getElementById("list");
+  ul.innerHTML = "";
+  items.forEach(i => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <a href="${i.link}">${i.title}</a><br>
+      <small>${i.domain} / ${i.date.slice(0,10)}</small>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+apply();
+</script>
+
+</body>
+</html>
