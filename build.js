@@ -28,12 +28,9 @@ const buildTime = new Date()
 
 // テンプレートに埋め込み
 const template = fs.readFileSync("template.html", "utf-8");
-const html = template.replace(
-  "__ITEMS_JSON__",
-  JSON.stringify(items, null, 2)
-);
-
-html = html.replace("__BUILD_TIME__", buildTime);
+const html = template
+  .replace("__ITEMS_JSON__", JSON.stringify(items, null, 2))
+  .replace("__BUILD_TIME__", buildTime);
 
 fs.writeFileSync("index.html", html);
 console.log("index.html generated");
