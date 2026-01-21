@@ -184,8 +184,16 @@ function apply() {
   }
 
 // ★日付文字列（YYYY-MM-DD）
-const from = dateFromInput.value || null;
-const to   = dateToInput.value   || null;
+const fromDays = dateFromInput.value;
+const toDays   = dateToInput.value;
+
+const from = fromDays !== ""
+  ? daysAgoToDateString(fromDays)
+  : null;
+
+const to = toDays !== ""
+  ? daysAgoToDateString(toDays)
+  : null;
 
 if (from || to) {
   list = list.filter(i => {
@@ -211,6 +219,12 @@ if (from || to) {
   render(list);
 }
 
+function daysAgoToDateString(days) {
+  const d = new Date();
+  d.setDate(d.getDate() - Number(days));
+  return d.toISOString().slice(0, 10);
+}
+  
 function render(items) {
   const ul = document.getElementById("list");
   ul.innerHTML = "";
