@@ -21,10 +21,15 @@ const items = [...rss.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => {
   };
 });
 
-const buildTime = new Date()
-  .toISOString()
-  .replace("T", " ")
-  .slice(0, 19); // YYYY-MM-DD HH:mm:ss
+const buildTime = new Date().toLocaleString("ja-JP", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit"
+});
 
 // テンプレートに埋め込み
 const template = fs.readFileSync("template.html", "utf-8");
