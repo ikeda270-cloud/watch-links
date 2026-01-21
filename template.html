@@ -16,6 +16,35 @@ small { color: #666; }
 <h1>Links</h1>
 
 <!-- UI -->
+
+<div class="filters">
+  <label>
+    開始:
+    <select id="fromDate">
+      <option value="">指定なし</option>
+      <option value="0">今日</option>
+      <option value="1">1日前</option>
+      <option value="3">3日前</option>
+      <option value="7">7日前</option>
+      <option value="30">30日前</option>
+    </select>
+  </label>
+
+  <label>
+    終了:
+    <select id="toDate">
+      <option value="">指定なし</option>
+      <option value="0">今日</option>
+      <option value="1">1日前</option>
+      <option value="3">3日前</option>
+      <option value="7">7日前</option>
+      <option value="30">30日前</option>
+    </select>
+  </label>
+</div>
+
+<hr>
+  
 <div>
   並び替え:
   <select id="sortKey">
